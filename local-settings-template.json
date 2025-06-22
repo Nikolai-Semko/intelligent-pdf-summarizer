@@ -1,0 +1,13 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "YOUR_STORAGE_CONNECTION_STRING",
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+    "BLOB_STORAGE_ENDPOINT": "YOUR_STORAGE_CONNECTION_STRING",
+    "COGNITIVE_SERVICES_ENDPOINT": "YOUR_FORM_RECOGNIZER_ENDPOINT",
+    "AZURE_OPENAI_ENDPOINT": "YOUR_OPENAI_ENDPOINT",
+    "AZURE_OPENAI_KEY": "YOUR_OPENAI_KEY",
+    "CHAT_MODEL_DEPLOYMENT_NAME": "gpt-35-turbo",
+    "AzureWebJobsFeatureFlags": "EnableWorkerIndexing"
+  }
+}
