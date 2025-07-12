@@ -1,0 +1,15 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "AzureWebJobsFeatureFlags": "EnableWorkerIndexing",
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+    "FUNCTIONS_EXTENSION_VERSION": "~4",
+    
+    "BLOB_STORAGE_ENDPOINT": "YOUR_STORAGE_CONNECTION_STRING",
+    "COGNITIVE_SERVICES_ENDPOINT": "https://YOUR_DOCUMENT_INTELLIGENCE.cognitiveservices.azure.com/",
+    "AZURE_OPENAI_ENDPOINT": "https://YOUR_OPENAI_SERVICE.openai.azure.com/",
+    "AZURE_OPENAI_KEY": "YOUR_OPENAI_API_KEY",
+    "CHAT_MODEL_DEPLOYMENT_NAME": "chat"
+  }
+}

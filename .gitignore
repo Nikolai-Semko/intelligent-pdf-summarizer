@@ -1,12 +1,14 @@
-# Byte-compiled / optimized / DLL files
+# Azure Functions
+bin
+obj
+local.settings.json
+.azure/
+
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
-
-# C extensions
 *.so
-
-# Distribution / packaging
 .Python
 build/
 develop-eggs/
@@ -25,23 +27,19 @@ wheels/
 *.egg
 
 # Virtual environments
-venv/
-.venv/
-ENV/
+.env
+.venv
 env/
-
-# Azure Functions
-local.settings.json
-.python_packages/
-.func/
-*.zip
+venv/
+ENV/
+env.bak/
+venv.bak/
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
-*~
 
 # OS
 .DS_Store
@@ -49,18 +47,17 @@ Thumbs.db
 
 # Logs
 *.log
+logs/
 
-# Environment variables
-.env
+# Temporary files
+*.tmp
+*.temp
 
-# Test coverage
-htmlcov/
-.coverage
-.coverage.*
-coverage.xml
-*.cover
+# Azure
+*.publishsettings
+*.azurePubxml
 
-# MyPy
-.mypy_cache/
-.dmypy.json
-dmypy.json
+# Security
+*.key
+*.pem
+secrets.txt
