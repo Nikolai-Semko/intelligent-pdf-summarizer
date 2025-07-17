@@ -1,213 +1,240 @@
-# 🤖 Intelligent PDF Summarizer
+# Intelligent PDF Summarizer - Lab 2
 
-A serverless solution that automatically summarizes PDF documents using Azure Durable Functions, Azure Document Intelligence, and Azure OpenAI.
+**CST8917 - Serverless Applications Lab 2**  
+*Build an Intelligent PDF Summarizer using Azure Durable Functions*
 
-## 🎥 Demo Video
+> **Lab Assignment:** Build an Intelligent PDF Summarizer using Azure Durable Functions and Cognitive Services, closely modeled after the Azure-Samples implementation.
 
-[![Watch Demo](https://img.shields.io/badge/Watch%20Demo-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/WH1ePpapRg8)
+## 🎥 **Demo Video**
 
+**🔗 [Watch the 5-minute Demo on YouTube](https://www.youtube.com/watch?v=WH1ePpapRg8)**
+
+
+[![Azure Functions](https://img.shields.io/badge/Azure-Functions-blue?logo=microsoft-azure)](https://azure.microsoft.com/en-us/services/functions/)
+[![Python](https://img.shields.io/badge/Python-3.9+-blue?logo=python)](https://www.python.org/)
+[![Azure OpenAI](https://img.shields.io/badge/Azure-OpenAI-green?logo=openai)](https://azure.microsoft.com/en-us/products/cognitive-services/openai-service/)
+
+## 📋 Lab 2 Requirements Fulfillment
+
+This project fulfills all Lab 2 requirements:
+
+✅ **Develop solution using Azure Durable Functions** - Complete serverless workflow implemented  
+✅ **Reuse Azure-Samples patterns** - Architecture closely follows Microsoft's best practices  
+✅ **GitHub repository with clear README** - Comprehensive documentation provided  
+✅ **5-minute demo video** - Complete walkthrough with code explanation  
+✅ **Video link in README** - Demo video embedded above  
+
+## 📋 Project Overview
+
+This project demonstrates an intelligent PDF summarization system built using **Azure Durable Functions**, **Azure Document Intelligence**, and **Azure OpenAI Services**. The application automatically processes PDF documents uploaded to Azure Blob Storage, extracts text content, generates AI-powered summaries, and saves the results for easy access.
+
+**Based on:** [Azure-Samples/Intelligent-PDF-Summarizer](https://github.com/Azure-Samples/Intelligent-PDF-Summarizer) with custom improvements for production reliability.
+
+### 🎯 Key Features
+
+- **Automatic PDF Processing**: Triggered when PDFs are uploaded to Blob Storage
+- **Durable Workflow Orchestration**: Ensures reliable processing with retry logic
+- **Text Extraction**: Uses Azure Document Intelligence (Form Recognizer) for accurate text extraction
+- **AI-Powered Summarization**: Leverages Azure OpenAI GPT-4o-mini for intelligent content summarization
+- **Scalable Architecture**: Built on Azure serverless technologies for automatic scaling
+- **Error Handling**: Comprehensive error handling with retry mechanisms
 
 ## 🏗️ Architecture
 
-The solution uses the following Azure services:
-
-1. **Azure Blob Storage** - Stores input PDFs and output summaries
-2. **Azure Durable Functions** - Orchestrates the processing workflow
-3. **Azure Document Intelligence** - Extracts text from PDFs
-4. **Azure OpenAI** - Generates intelligent summaries
-
-### Workflow
+The solution follows a serverless architecture pattern using Azure Durable Functions to orchestrate the workflow:
 
 ```
-PDF Upload → Blob Trigger → Extract Text → Generate Summary → Save Result
+┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│   Blob Storage  │    │ Durable Function │    │  Azure OpenAI   │
+│   (Input PDFs)  │────┤   Orchestrator   │────┤   (GPT-4o-mini) │
+└─────────────────┘    │                  │    └─────────────────┘
+                       │  ┌─────────────┐ │
+                       │  │ Blob Trigger│ │    ┌─────────────────┐
+                       │  │ Function    │ │    │ Document Intel. │
+                       │  └─────────────┘ │────┤ (Text Extract.) │
+                       │                  │    └─────────────────┘
+                       │  ┌─────────────┐ │
+                       │  │   Output    │ │    ┌─────────────────┐
+                       │  │ Generation  │ │────┤  Blob Storage   │
+                       │  └─────────────┘ │    │ (Output Files)  │
+                       └──────────────────┘    └─────────────────┘
 ```
 
-## 📋 Prerequisites
+## 🛠️ Technology Stack
 
-- Azure subscription with access to:
-  - Azure Functions
-  - Azure Storage
-  - Azure Document Intelligence (Form Recognizer)
-  - Azure OpenAI Service
-- [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
-- [Azure Developer CLI](https://aka.ms/azd)
-- [Python 3.9+](https://www.python.org/downloads/)
-- [Azure Functions Core Tools](https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local)
-
-## 🚀 Quick Start
-
-### 1. Clone and Setup
-
-```bash
-git clone https://github.com/yourusername/intelligent-pdf-summarizer.git
-cd intelligent-pdf-summarizer
-```
-
-### 2. Deploy to Azure
-
-```bash
-# Initialize and deploy with Azure Developer CLI
-azd init
-azd up
-```
-
-**OR** use the deployment script:
-
-```bash
-# For Windows (PowerShell)
-./deploy.ps1
-
-# For Linux/Mac
-chmod +x deploy.sh
-./deploy.sh
-```
-
-### 3. Configure Local Development (Optional)
-
-```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Copy settings template
-cp local.settings.template.json local.settings.json
-
-# Edit local.settings.json with your Azure service endpoints and keys
-
-# Start local development
-func start
-```
-
-## 📖 Usage
-
-### Upload PDFs
-
-1. Navigate to your storage account in the Azure Portal
-2. Open the **input** container
-3. Upload PDF files
-4. Check the **output** container for summaries
-
-### Monitor Processing
-
-- View function logs in Azure Portal
-- Check Application Insights for detailed telemetry
-- Use the health endpoint: `https://your-function-app.azurewebsites.net/api/health`
-
-## ⚙️ Configuration
-
-The application uses these environment variables:
-
-| Variable | Description |
-|----------|-------------|
-| `BLOB_STORAGE_ENDPOINT` | Azure Storage connection string |
-| `COGNITIVE_SERVICES_ENDPOINT` | Document Intelligence endpoint |
-| `AZURE_OPENAI_ENDPOINT` | Azure OpenAI service endpoint |
-| `AZURE_OPENAI_KEY` | Azure OpenAI API key |
-| `CHAT_MODEL_DEPLOYMENT_NAME` | OpenAI model deployment name |
-
-## 🧪 Testing
-
-### Manual Testing
-
-Test the function manually:
-
-```bash
-# Test with existing blob
-curl -X POST "https://your-function-app.azurewebsites.net/api/process/your-document.pdf"
-```
-
-### Health Check
-
-```bash
-curl "https://your-function-app.azurewebsites.net/api/health"
-```
+- **Azure Durable Functions** - Workflow orchestration
+- **Azure Blob Storage** - File storage (input/output)
+- **Azure Document Intelligence** - PDF text extraction
+- **Azure OpenAI Service** - GPT-4o-mini for summarization
+- **Python 3.9+** - Runtime environment
+- **Azure Functions Core Tools** - Local development
 
 ## 📁 Project Structure
 
-**Core Files (Required):**
 ```
-├── function_app.py                 # Main application logic
-├── host.json                       # Function host configuration  
-├── requirements.txt                # Python dependencies
-├── azure.yaml                     # Azure Developer CLI configuration
-├── main.parameters.json           # Deployment parameters
-└── README.md                      # Documentation
-```
-
-**Helper Files (Optional):**
-```
-├── deploy.sh                      # Simple deployment script
-├── local.settings.template.json   # Local development template
-├── .gitignore                     # Git ignore rules
-└── infra/                         # Infrastructure as Code (Bicep templates)
+intelligent-pdf-summarizer/
+├── function_app.py              # Main application with all functions
+├── requirements.txt             # Python dependencies
+├── host.json                   # Function app configuration
+├── local.settings.json         # Local development settings
+├── local.settings.template.json # Template for settings
+├── deploy.sh                   # Deployment automation script
+├── main.bicep                  # Infrastructure as Code (Bicep)
+├── main.parameters.json        # Bicep parameters
+└── README.md                   # This file
 ```
 
-**Minimum required:** Just the core files are enough to run the application!
+## 🚀 Key Functions
 
-## 🔧 Troubleshooting
+### 1. Blob Trigger Function
+- **Trigger**: New PDF uploaded to `input` container
+- **Action**: Starts the durable orchestration workflow
+- **Input**: PDF file from Blob Storage
 
-### Common Issues
+### 2. Orchestrator Function (`process_document`)
+- **Purpose**: Coordinates the entire workflow
+- **Steps**:
+  1. Extract text from PDF using Document Intelligence
+  2. Generate summary using Azure OpenAI
+  3. Save summary to output container
+- **Features**: Retry logic, error handling, state management
 
-**Function not starting:**
-- Check that all environment variables are set correctly
-- Verify Azure service endpoints are accessible
-- Check function app logs for specific errors
+### 3. Text Extraction Activity (`analyze_pdf`)
+- **Service**: Azure Document Intelligence (Form Recognizer)
+- **Input**: PDF binary data
+- **Output**: Extracted text content
+- **Features**: Handles multi-page documents, preserves formatting
 
-**PDF processing fails:**
-- Ensure the PDF is less than 50MB
-- Verify Document Intelligence service is deployed
-- Check that the PDF is not password-protected
+### 4. Summarization Activity (`summarize_text`)
+- **Service**: Azure OpenAI GPT-4o-mini
+- **Method**: Direct HTTP API calls (bypasses Azure Functions OpenAI Extension)
+- **Input**: Extracted text content
+- **Output**: AI-generated summary
+- **Features**: Token optimization, error handling, configurable prompts
 
-**No summary generated:**
-- Verify Azure OpenAI service is deployed and accessible
-- Check that the model deployment name is correct
-- Ensure sufficient quota is available
+### 5. Output Generation Activity (`write_doc`)
+- **Purpose**: Save summary to Blob Storage
+- **Output**: Timestamped summary files in `output` container
+- **Format**: `{original_name}_summary_{timestamp}.txt`
 
-### Debug Commands
+## ⚙️ Configuration
 
+### Required Environment Variables
+
+```json
+{
+  "AZURE_OPENAI_ENDPOINT": "https://your-openai-resource.openai.azure.com/",
+  "AZURE_OPENAI_KEY": "your-openai-api-key",
+  "CHAT_MODEL_DEPLOYMENT_NAME": "chat",
+  "COGNITIVE_SERVICES_ENDPOINT": "https://your-doc-intel-resource.cognitiveservices.azure.com/",
+  "BLOB_STORAGE_ENDPOINT": "your-storage-connection-string"
+}
+```
+
+### Azure Resources Required
+
+1. **Function App** (Python 3.9+, Consumption Plan)
+2. **Storage Account** with containers: `input`, `output`
+3. **Document Intelligence Service** (S0 tier)
+4. **Azure OpenAI Service** with `gpt-4o-mini` deployment
+
+## 🔧 Deployment
+
+### Option 1: Automated Deployment
 ```bash
-# View function logs
-az functionapp log tail --name YOUR_FUNCTION_APP --resource-group YOUR_RESOURCE_GROUP
-
-# Check storage containers
-az storage container list --account-name YOUR_STORAGE_ACCOUNT
-
-# Test connectivity
-curl -I https://YOUR_FUNCTION_APP.azurewebsites.net/api/health
+./deploy.sh
 ```
 
-## 📊 Performance
+### Option 2: Manual Deployment
+```bash
+# Deploy infrastructure
+az deployment group create --resource-group rg-pdf-summarizer --template-file main.bicep
 
-- **Processing Time**: 30-60 seconds per document
-- **File Size Limit**: 50MB per PDF
-- **Supported Formats**: PDF documents
-- **Concurrency**: Scales automatically with demand
+# Deploy function code
+func azure functionapp publish your-function-app-name --python
+```
 
-## 🔒 Security
+## 🧪 Testing
 
-- All secrets stored in Azure Key Vault
-- HTTPS-only communication
-- Managed identities for service authentication
-- Private endpoints available for enhanced security
+### Upload a PDF for Processing
+```bash
+az storage blob upload \
+  --account-name your-storage-account \
+  --container-name input \
+  --name test.pdf \
+  --file path/to/your/file.pdf \
+  --auth-mode login
+```
 
-## 📄 License
+### Monitor Processing
+```bash
+az webapp log tail --name your-function-app --resource-group your-rg
+```
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+### Check Results
+```bash
+az storage blob list \
+  --account-name your-storage-account \
+  --container-name output \
+  --auth-mode login
+```
 
-## 🤝 Contributing
+## 🔧 Key Implementation Details
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+### Solved Issues
 
-## 📞 Support
+1. **Azure OpenAI Integration**: 
+   - **Problem**: Azure Functions OpenAI Extension had deployment detection issues
+   - **Solution**: Implemented direct HTTP API calls to Azure OpenAI
+   - **Benefit**: More reliable, better error handling, easier debugging
 
-For issues and questions:
-- Check the troubleshooting section above
-- Review Azure service documentation
-- Open an issue in this repository
+2. **Endpoint Configuration**:
+   - **Problem**: Mixed Cognitive Services and OpenAI endpoints
+   - **Solution**: Properly configured separate endpoints for each service
+   - **Result**: Clean separation of concerns
 
----
+3. **Error Handling**:
+   - **Implementation**: Comprehensive try-catch blocks with detailed logging
+   - **Features**: Graceful degradation, meaningful error messages
 
-**Built with ❤️ using Azure Services**
+### Custom Improvements Over Azure-Samples
+
+- **Direct OpenAI API Integration**: Bypassed Azure Functions OpenAI Extension for better reliability
+- **Enhanced Error Handling**: Comprehensive logging and graceful error recovery
+- **Production-Ready Configuration**: Proper endpoint separation and environment variable management
+- **Improved Monitoring**: Detailed logging at each workflow step
+- **Token Optimization**: Smart text truncation to optimize API costs
+
+### Performance Optimizations
+
+- **Text Limiting**: Truncate input to 4000 characters to optimize token usage
+- **Timeout Configuration**: 60-second timeout for OpenAI API calls
+- **Retry Logic**: Built-in Durable Functions retry mechanisms
+
+## 📊 Monitoring & Logging
+
+The application provides comprehensive logging at each step:
+
+```
+[Information] Processing document: filename.pdf
+[Information] Processing text of length: 3318
+[Information] Using endpoint: https://your-resource.openai.azure.com/
+[Information] API response status: 200
+[Information] Successfully generated summary: 245 characters
+[Information] Successfully processed filename.pdf, output saved as filename_summary_20250712_123456.txt
+```
+
+
+## 🔒 Security Features
+
+- **Managed Identity**: Uses Azure Managed Identity for service authentication
+- **Key Vault Integration**: Secure storage of API keys and connection strings
+- **Network Security**: Private endpoints for enhanced security
+- **Access Control**: Role-based access control (RBAC) for all resources
+
+## 📈 Scalability
+
+- **Automatic Scaling**: Function App scales based on demand
+- **Consumption Plan**: Pay-per-execution model
+- **Durable Functions**: Handle high-throughput scenarios efficiently
+- **Storage Partitioning**: Efficient file organization for large volumes

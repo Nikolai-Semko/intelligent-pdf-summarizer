@@ -117,7 +117,7 @@ def summarize_text(text_content: str):
     logging.info("Starting text summarization with direct API call")
     
     try:
-        # Получить настройки из environment variables
+        # Get settings from environment variables
         azure_openai_endpoint = os.environ.get("AZURE_OPENAI_ENDPOINT")
         azure_openai_key = os.environ.get("AZURE_OPENAI_KEY") 
         deployment_name = os.environ.get("CHAT_MODEL_DEPLOYMENT_NAME", "chat")
@@ -125,11 +125,11 @@ def summarize_text(text_content: str):
         if not azure_openai_endpoint or not azure_openai_key:
             raise Exception("Azure OpenAI settings not found in environment variables")
         
-        # Убедиться что endpoint заканчивается на /
+        # Ensure endpoint ends with /
         if not azure_openai_endpoint.endswith('/'):
             azure_openai_endpoint += '/'
         
-        # Ограничить длину текста для экономии токенов
+        # Limit text length to save tokens
         max_length = 4000
         if len(text_content) > max_length:
             text_content = text_content[:max_length] + "..."
@@ -138,7 +138,7 @@ def summarize_text(text_content: str):
         logging.info(f"Using endpoint: {azure_openai_endpoint}")
         logging.info(f"Using deployment: {deployment_name}")
         
-        # Построить URL для API
+        # Build API URL
         api_url = f"{azure_openai_endpoint}openai/deployments/{deployment_name}/chat/completions?api-version=2024-02-15-preview"
         
         headers = {
@@ -194,7 +194,7 @@ def summarize_text(text_content: str):
         
     except Exception as e:
         logging.error(f"Error in summarize_text: {str(e)}")
-        # В случае ошибки возвращаем базовое резюме
+        # Return basic summary in case of error
         return {
             "content": f"Summary generation failed: {str(e)}. Original text length: {len(text_content)} characters.",
             "error": str(e)

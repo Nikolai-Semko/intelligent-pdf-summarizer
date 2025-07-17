@@ -36,7 +36,7 @@ env.bak/
 venv.bak/
 
 # IDE
-.vscode/
+
 .idea/
 *.swp
 *.swo
@@ -61,3 +61,5 @@ logs/
 *.key
 *.pem
 secrets.txt
+.python_packages
+venv2
