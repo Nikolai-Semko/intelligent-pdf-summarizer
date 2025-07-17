@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intelligent PDF Summarizer - Architecture</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .architecture-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .workflow-step {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .workflow-step:hover {
+            transform: scale(1.05);
+        }
+
+        .service-box {
+            fill: #f8f9fa;
+            stroke: #6c757d;
+            stroke-width: 2;
+            transition: all 0.3s ease;
+        }
+
+        .service-box:hover {
+            fill: #e3f2fd;
+            stroke: #2196f3;
+            stroke-width: 3;
+        }
+
+        .azure-service {
+            fill: #0078d4;
+        }
+
+        .function-service {
+            fill: #00bcf2;
+        }
+
+        .storage-service {
+            fill: #00a1f1;
+        }
+
+        .ai-service {
+            fill: #00ff87;
+        }
+
+        .service-text {
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            text-anchor: middle;
+            dominant-baseline: middle;
+            fill: #333;
+        }
+
+        .service-description {
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 12px;
+            text-anchor: middle;
+            dominant-baseline: middle;
+            fill: #666;
+        }
+
+        .flow-arrow {
+            stroke: #6c757d;
+            stroke-width: 3;
+            fill: none;
+            marker-end: url(#arrowhead);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        .step-number {
+            fill: #ff6b6b;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 16px;
+            font-weight: bold;
+            text-anchor: middle;
+            dominant-baseline: middle;
+        }
+
+        .info-panel {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+            border-left: 5px solid #0078d4;
+        }
+
+        .info-panel h3 {
+            color: #0078d4;
+            margin-bottom: 15px;
+        }
+
+        .info-panel ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .info-panel li {
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .info-panel li:last-child {
+            border-bottom: none;
+        }
+
+        .icon {
+            width: 24px;
+            height: 24px;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+
+        .highlight-animation {
+            animation: highlight 1s ease-in-out;
+        }
+
+        @keyframes highlight {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.3); }
+        }
+
+        .tech-stack {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .tech-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .tech-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .tech-card h4 {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .tech-card p {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🤖 Intelligent PDF Summarizer</h1>
+        <p>Azure Durable Functions Architecture - Lab 2</p>
+    </div>
+
+    <div class="architecture-container">
+        <svg width="100%" height="600" viewBox="0 0 1100 600">
+            <!-- Definitions for arrows and gradients -->
+            <defs>
+                <marker id="arrowhead" markerWidth="10" markerHeight="7" 
+                        refX="10" refY="3.5" orient="auto">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="#6c757d" />
+                </marker>
+                
+                <linearGradient id="azureGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#0078d4;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#00bcf2;stop-opacity:1" />
+                </linearGradient>
+                
+                <linearGradient id="aiGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#00ff87;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#60efff;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+
+            <!-- Background grid -->
+            <defs>
+                <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
+                    <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#f0f0f0" stroke-width="1"/>
+                </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid)" opacity="0.3"/>
+
+            <!-- Step 1: PDF Upload -->
+            <g class="workflow-step" onclick="highlightStep(1)">
+                <rect x="50" y="50" width="150" height="80" rx="10" class="service-box storage-service" fill="url(#azureGradient)"/>
+                <text x="125" y="75" class="service-text" fill="white">📁 Blob Storage</text>
+                <text x="125" y="95" class="service-description" fill="white">Input Container</text>
+                <text x="125" y="110" class="service-description" fill="white">PDF Upload</text>
+                <circle cx="40" cy="40" r="15" fill="#ff6b6b"/>
+                <text x="40" y="45" class="step-number" fill="white">1</text>
+            </g>
+
+            <!-- Step 2: Blob Trigger -->
+            <g class="workflow-step" onclick="highlightStep(2)">
+                <rect x="300" y="50" width="150" height="80" rx="10" class="service-box function-service" fill="url(#azureGradient)"/>
+                <text x="375" y="75" class="service-text" fill="white">⚡ Blob Trigger</text>
+                <text x="375" y="95" class="service-description" fill="white">Function</text>
+                <text x="375" y="110" class="service-description" fill="white">Auto-triggered</text>
+                <circle cx="290" cy="40" r="15" fill="#ff6b6b"/>
+                <text x="290" y="45" class="step-number" fill="white">2</text>
+            </g>
+
+            <!-- Step 3: Orchestrator -->
+            <g class="workflow-step" onclick="highlightStep(3)">
+                <rect x="550" y="50" width="150" height="80" rx="10" class="service-box function-service" fill="url(#azureGradient)"/>
+                <text x="625" y="75" class="service-text" fill="white">🎯 Orchestrator</text>
+                <text x="625" y="95" class="service-description" fill="white">Durable Function</text>
+                <text x="625" y="110" class="service-description" fill="white">Workflow Manager</text>
+                <circle cx="540" cy="40" r="15" fill="#ff6b6b"/>
+                <text x="540" y="45" class="step-number" fill="white">3</text>
+            </g>
+
+            <!-- Step 4: Document Intelligence -->
+            <g class="workflow-step" onclick="highlightStep(4)">
+                <rect x="300" y="200" width="150" height="100" rx="10" class="service-box azure-service" fill="url(#azureGradient)"/>
+                <text x="375" y="230" class="service-text" fill="white">📄 Document Intel.</text>
+                <text x="375" y="250" class="service-description" fill="white">Text Extraction</text>
+                <text x="375" y="270" class="service-description" fill="white">analyze_pdf()</text>
+                <text x="375" y="285" class="service-description" fill="white">Form Recognizer</text>
+                <circle cx="290" cy="190" r="15" fill="#ff6b6b"/>
+                <text x="290" y="195" class="step-number" fill="white">4</text>
+            </g>
+
+            <!-- Step 5: Azure OpenAI -->
+            <g class="workflow-step" onclick="highlightStep(5)">
+                <rect x="550" y="200" width="150" height="100" rx="10" class="service-box ai-service" fill="url(#aiGradient)"/>
+                <text x="625" y="230" class="service-text" fill="black">🧠 Azure OpenAI</text>
+                <text x="625" y="250" class="service-description" fill="black">GPT-4o-mini</text>
+                <text x="625" y="270" class="service-description" fill="black">summarize_text()</text>
+                <text x="625" y="285" class="service-description" fill="black">Direct API calls</text>
+                <circle cx="540" cy="190" r="15" fill="#ff6b6b"/>
+                <text x="540" y="195" class="step-number" fill="white">5</text>
+            </g>
+
+            <!-- Step 6: Output Generation -->
+            <g class="workflow-step" onclick="highlightStep(6)">
+                <rect x="800" y="200" width="150" height="100" rx="10" class="service-box function-service" fill="url(#azureGradient)"/>
+                <text x="875" y="230" class="service-text" fill="white">📝 Output Gen.</text>
+                <text x="875" y="250" class="service-description" fill="white">write_doc()</text>
+                <text x="875" y="270" class="service-description" fill="white">Activity Function</text>
+                <text x="875" y="285" class="service-description" fill="white">Format Results</text>
+                <circle cx="790" cy="190" r="15" fill="#ff6b6b"/>
+                <text x="790" y="195" class="step-number" fill="white">6</text>
+            </g>
+
+            <!-- Step 7: Final Output -->
+            <g class="workflow-step" onclick="highlightStep(7)">
+                <rect x="800" y="400" width="150" height="80" rx="10" class="service-box storage-service" fill="url(#azureGradient)"/>
+                <text x="875" y="425" class="service-text" fill="white">💾 Blob Storage</text>
+                <text x="875" y="445" class="service-description" fill="white">Output Container</text>
+                <text x="875" y="460" class="service-description" fill="white">Summary Files</text>
+                <circle cx="790" cy="390" r="15" fill="#ff6b6b"/>
+                <text x="790" y="395" class="step-number" fill="white">7</text>
+            </g>
+
+            <!-- Flow Arrows -->
+            <path d="M 200 90 L 290 90" class="flow-arrow" />
+            <path d="M 450 90 L 540 90" class="flow-arrow" />
+            <path d="M 625 130 L 625 170 M 615 160 L 625 170 L 635 160" class="flow-arrow" />
+            <path d="M 550 250 L 460 250" class="flow-arrow" />
+            <path d="M 700 250 L 790 250" class="flow-arrow" />
+            <path d="M 875 300 L 875 390" class="flow-arrow" />
+
+            <!-- Additional connection from orchestrator to activities -->
+            <path d="M 580 130 L 400 180" class="flow-arrow" stroke-dasharray="5,5" stroke="#00ff87"/>
+            
+            <!-- Labels for connections -->
+            <text x="245" y="85" class="service-description">Triggers</text>
+            <text x="495" y="85" class="service-description">Starts</text>
+            <text x="490" y="245" class="service-description">Text</text>
+            <text x="745" y="245" class="service-description">Summary</text>
+            <text x="885" y="350" class="service-description">Saves</text>
+        </svg>
+
+        <div class="info-panel">
+            <h3>🚀 Workflow Process</h3>
+            <ul>
+                <li><strong>Step 1:</strong> PDF file uploaded to input Blob Storage container</li>
+                <li><strong>Step 2:</strong> Blob trigger function detects new file and starts orchestration</li>
+                <li><strong>Step 3:</strong> Durable Function orchestrator manages the entire workflow</li>
+                <li><strong>Step 4:</strong> Document Intelligence extracts text from PDF using analyze_pdf() activity</li>
+                <li><strong>Step 5:</strong> Azure OpenAI generates summary using summarize_text() with direct API calls</li>
+                <li><strong>Step 6:</strong> Output generation activity formats and prepares the final summary</li>
+                <li><strong>Step 7:</strong> Summary saved to output Blob Storage container with timestamp</li>
+            </ul>
+        </div>
+
+        <div class="tech-stack">
+            <div class="tech-card">
+                <h4>🔧 Azure Functions</h4>
+                <p>Serverless compute platform for event-driven applications</p>
+            </div>
+            <div class="tech-card">
+                <h4>🔄 Durable Functions</h4>
+                <p>Stateful functions in serverless environments with orchestration</p>
+            </div>
+            <div class="tech-card">
+                <h4>💾 Blob Storage</h4>
+                <p>Scalable object storage for input PDFs and output summaries</p>
+            </div>
+            <div class="tech-card">
+                <h4>📄 Document Intelligence</h4>
+                <p>AI-powered document analysis and text extraction service</p>
+            </div>
+            <div class="tech-card">
+                <h4>🧠 Azure OpenAI</h4>
+                <p>GPT-4o-mini model for intelligent content summarization</p>
+            </div>
+            <div class="tech-card">
+                <h4>🐍 Python 3.9+</h4>
+                <p>Runtime environment with comprehensive error handling</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function highlightStep(stepNumber) {
+            // Remove existing highlights
+            document.querySelectorAll('.workflow-step').forEach(step => {
+                step.classList.remove('highlight-animation');
+            });
+            
+            // Add highlight to clicked step
+            const steps = document.querySelectorAll('.workflow-step');
+            if (steps[stepNumber - 1]) {
+                steps[stepNumber - 1].classList.add('highlight-animation');
+            }
+            
+            // Show step information
+            const stepInfo = {
+                1: "PDF Upload: Users upload PDF documents to the input Blob Storage container",
+                2: "Blob Trigger: Automatically detects new files and initiates the processing workflow",
+                3: "Orchestrator: Manages the entire workflow with retry logic and error handling",
+                4: "Text Extraction: Azure Document Intelligence extracts text content from PDFs",
+                5: "AI Summarization: Azure OpenAI GPT-4o-mini generates intelligent summaries",
+                6: "Output Generation: Formats and prepares the final summary with metadata",
+                7: "Final Storage: Saves timestamped summary files to the output container"
+            };
+            
+            // Create or update info display
+            let infoDisplay = document.getElementById('step-info');
+            if (!infoDisplay) {
+                infoDisplay = document.createElement('div');
+                infoDisplay.id = 'step-info';
+                infoDisplay.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: rgba(0, 120, 212, 0.95);
+                    color: white;
+                    padding: 15px;
+                    border-radius: 10px;
+                    max-width: 300px;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                    font-size: 14px;
+                    z-index: 1000;
+                    transition: all 0.3s ease;
+                `;
+                document.body.appendChild(infoDisplay);
+            }
+            
+            infoDisplay.innerHTML = `<strong>Step ${stepNumber}</strong><br>${stepInfo[stepNumber]}`;
+            infoDisplay.style.opacity = '1';
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                if (infoDisplay) {
+                    infoDisplay.style.opacity = '0';
+                }
+            }, 5000);
+        }
+
+        // Add hover effects
+        document.querySelectorAll('.workflow-step').forEach((step, index) => {
+            step.addEventListener('mouseenter', () => {
+                step.style.filter = 'brightness(1.1)';
+            });
+            
+            step.addEventListener('mouseleave', () => {
+                step.style.filter = 'brightness(1)';
+            });
+        });
+
+        // Add automatic animation cycle
+        let currentStep = 1;
+        function autoHighlight() {
+            highlightStep(currentStep);
+            currentStep = currentStep >= 7 ? 1 : currentStep + 1;
+        }
+
+        // Start auto-highlight every 3 seconds
+        setInterval(autoHighlight, 3000);
+    </script>
+</body>
+</html>

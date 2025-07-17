@@ -7,7 +7,7 @@
 
 ## 🎥 **Demo Video**
 
-**🔗 [Watch the 5-minute Demo on YouTube](https://www.youtube.com/watch?v=WH1ePpapRg8)**
+**🔗 [Watch the 6-minute Demo on YouTube](https://youtu.be/JdD7b3Qu2Bk)**
 
 
 [![Azure Functions](https://img.shields.io/badge/Azure-Functions-blue?logo=microsoft-azure)](https://azure.microsoft.com/en-us/services/functions/)
